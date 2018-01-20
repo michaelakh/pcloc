@@ -1,0 +1,15 @@
+<%= form_tag({controller: "offices", action: "search"}, method: "get", class: "nifty_form") do %>
+  <div class="field">
+    <%= label_tag :postcode %>
+    <%= text_field_tag :postcode %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :distance %>
+    <%= select_tag(:distance , options_for_select([['within 5 miles',5],['within 10 miles',10],['within 15 miles',15],['within 25 miles',25],['within 50 miles',50],['within 100 miles',100]])) %>
+  </div>
+
+  <div class="actions">
+    <%= submit_tag %>
+  </div>
+<% end %>
