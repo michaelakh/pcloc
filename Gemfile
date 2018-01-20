@@ -5,6 +5,8 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+# Use postgresql as the database for Active Record
+gem 'pg', '~> 0.18'
 #Api requests
 gem "http"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

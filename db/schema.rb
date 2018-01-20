@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180120144901) do
+ActiveRecord::Schema.define(version: 20180120210554) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "offices", force: :cascade do |t|
     t.string   "name"
@@ -22,10 +25,10 @@ ActiveRecord::Schema.define(version: 20180120144901) do
     t.string   "county"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string   "lat"
-    t.string   "lon"
-    t.index ["lat"], name: "index_offices_on_lat"
-    t.index ["lon"], name: "index_offices_on_lon"
+    t.float    "lat"
+    t.float    "lon"
+    t.index ["lat"], name: "index_offices_on_lat", using: :btree
+    t.index ["lon"], name: "index_offices_on_lon", using: :btree
   end
 
 end
