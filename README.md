@@ -21,11 +21,38 @@ run
 * bundle update
 
 go to database.yml file and configure postgresql database to your specifications
+make sure you have postgres installed
 
+if you have postgresql install skip to STEP 2
+
+if you don't have postgresql installed... and you're on linux run
+
+* sudo apt-get install postgres
+
+this will get most recent version
 then run
 
+* sudo -u postgres -i
+
+to get into your postgres database
+
+and run
+
+* createuser 'your username here' --superuser
+
+then check the database.yml file and under defaults make sure there's
+* username: 'your usermame here'
+
+for me that was username: mike
+
+STEP 2
+now run 
 * rake db:create
 * rake db:migrate
+
+Then run 
+
+* rails s
 
 Now use the app, add some data in and test to see if you can return location within 2 points
 
