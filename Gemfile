@@ -5,12 +5,20 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+# add bootstrap for simple styling
+gem 'bootstrap-sass'
+#postgis geospatial searching
+gem 'activerecord-postgis-adapter'
+# rego is postgis dependancy
+gem "rgeo"
+# for points
+gem 'georuby'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 0.18'
 #Api requests
 gem "http"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.0.6'
+gem 'rails', '~> 5.1.4'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use Puma as the app server

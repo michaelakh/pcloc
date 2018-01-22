@@ -1,42 +1,28 @@
 <%= render 'search' %>
-<h1>Offices</h1>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Country</th>
-      <th>Postcode</th>
-      <th>Street ad</th>
-      <th>Town city</th>
-      <th>Phone no</th>
-      <th>County</th>
-      <th>Latitude</th>
-      <th>Longitude</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+<h1>Offices <%= link_to 'Create a new Office', new_office_path, class:'btn btn-primary' %></h1>
 
-  <tbody>
     <% @offices.each do |office| %>
-      <tr>
-        <td><%= office.name %></td>
-        <td><%= office.country %></td>
-        <td><%= office.postcode %></td>
-        <td><%= office.street_ad %></td>
-        <td><%= office.town_city %></td>
-        <td><%= office.phone_no %></td>
-        <td><%= office.county %></td>
-        <td><%= office.lat %></td>
-        <td><%= office.lon %></td>
-        <td><%= link_to 'Show', office %></td>
-        <td><%= link_to 'Edit', edit_office_path(office) %></td>
-        <td><%= link_to 'Destroy', office, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
+    <div class="list-group">
+      <%= link_to office, class: 'list-group-item office' do %>
+ 
+        <h4 class="list-group-item-heading"><%= office.name %></h4>
+        <p class="list-group-item-text"> 
+          <%= office.street_ad %>
+          <br>
+          <%= office.county %>, <%= office.town_city %>, <%= office.postcode %>
+          <br>
+          <%= office.country %>
+          <br>
+          Phone no: <%= office.phone_no%>
+          <br>
+          Lon/lat: <%= "#{office.lon}/#{office.lat}"%>
+        </p>
+      <% end %>
+    </div>
     <% end %>
-  </tbody>
-</table>
 
 <br>
 
 <%= link_to 'New Office', new_office_path %>
+

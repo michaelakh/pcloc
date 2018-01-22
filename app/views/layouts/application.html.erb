@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Pcloc</title>
+    <title><%= @title == nil ? 'pcloc' : @title %></title>
     <%= csrf_meta_tags %>
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
@@ -9,9 +9,13 @@
   </head>
 
   <body>
-    <% flash.each do |key,msg| %>
-      <p id='notice'><%= msg %></p>
-    <% end %>
-    <%= yield %>
+    <div class='container'>
+      <%= render 'layouts/header' %>
+      <% flash.each do |key, msg| %>
+        <%= content_tag :div, msg, class: "flash #{key}" %>
+      <% end %>
+      <%= yield %>
+      <%= render 'layouts/footer' %>
+    </div>
   </body>
 </html>
