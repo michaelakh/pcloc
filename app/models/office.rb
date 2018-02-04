@@ -8,4 +8,10 @@ class Office < ApplicationRecord
   validates_presence_of :town_city
   validates_presence_of :phone_no
   
+  def display_office
+    [name, country, street_ad, phone_no].join " "
+  end
+  
+  
+  
 end

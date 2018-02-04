@@ -36,3 +36,4 @@
 <%= link_to 'Edit', edit_office_path(@office) %> |
 <%= link_to 'Back', offices_path %> |
 <%= link_to 'Delete', @office, method: :delete, data: { confirm: 'Are you sure?' } %>
+<%= @office.display_office %>

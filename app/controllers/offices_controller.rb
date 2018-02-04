@@ -6,7 +6,6 @@ class OfficesController < ApplicationController
   end
 
   def show
-    
   end
   
   def search
@@ -26,56 +25,12 @@ class OfficesController < ApplicationController
         flash[:notice] = 'postcode is invalid, please try again'
         redirect_to offices_path
       else
-          #set long and lat in params based off values returned from api
+        #set long and lat in params based off values returned from api
         lon = @response['result']['longitude']
         lat = @response['result']['latitude']
-
         distance = params['distance'].to_i * 1.609344
-
-        # divide distance in km by Radian of the earth in km (6371km)
-        # this will speed up queries because we can calculate the min and max lon and lats with this data
-        # now we don't have to perform the big formula bellow on all rows of the database but only on
-        # the rows that are within the range of min and max lon and lat
-
-        r = distance/6371
-
-        latmin = lat - r 
-        latmax = lat + r
-
-        # here it gets a little more complicated, but calculating longitudes min and max the same way we did latitude
-        # is incorrect because distance gets shorter the further north or south you go from the equator
-        # so the next formula was taken from a math book to get the correct min/max long distance
-
-        latT = Math.asin(Math.sin(lat)/Math.cos(r))
-
-        # @longT = Math.acos( ( Math.cos(r) - Math.sin(latT) * Math.sin(lat) ) / ( Math.cos(latT) * Math.cos(lat) ) )
-        # formula above is long form of formula bellow
-
-        lonT = Math.asin(Math.sin(r)/Math.cos(lat))
-
-        lonmin = lon - lonT
-        lonmax = lon + lonT
-
-        ## First attempt at creating query, but this query doesn't use index of the table so if we had a large dataset, searches would be slow
-        #
-        # sql = "select * from (
-        # SELECT  *,( 3959 * acos( cos( radians(#{lat}) ) * cos( radians( lat ) ) * cos( radians( lon ) - radians(#{lon}) ) + sin( radians(#{lat}) # ) * sin( radians( lat ) ) ) ) AS distance 
-        # FROM offices
-        # ) al
-        # where distance < #{params['distance']}
-        # ORDER BY distance;"
-
-        # This query uses indexes of the table and speeds up searches
-        sql = "select * from (
-        SELECT *,( lat >= #{latmin} AND lat <= #{latmax}) AND (lon >= #{lonmin} AND lon <= #{lonmax}),
-        ( 3959 * acos( cos( radians(#{lat}) ) * cos( radians( lat ) ) * cos( radians( lon ) - radians(#{lon}) ) + sin( radians(#{lat}) ) * sin( radians( lat ) ) ) ) AS distance
-        FROM offices
-        ) al
-        where distance < #{params['distance']}
-        ORDER BY distance;"
-        @office = ActiveRecord::Base.connection.execute(sql)
         
-        # I tested this method with Postgis/rgeo method and they both return almost identical values
+       @office = get_offices(lon, lat, distance)
       end
       
     end
@@ -92,7 +47,7 @@ class OfficesController < ApplicationController
 
   def create
     @office = Office.new(office_params)
-    if @office.valid?
+    if @office.valid?400
       get_coordinates
       capitalize_params
     end
@@ -159,11 +114,62 @@ class OfficesController < ApplicationController
       
     end
   
+  #format user inputs for consistency in database
   def capitalize_params
     params['office']['name'].capitalize!
     params['office']['postcode'].upcase! 
     params['office']['county'].capitalize! 
     params['office']['town_city'].capitalize! 
      
+  end
+  
+  #search database for closest offices near a given longitude/latitude
+  def get_offices(lon, lat, distance)
+    
+    # divide distance in km by Radian of the earth in km (6371km)
+    # this will speed up queries because we can calculate the min and max lon and lats with this data
+    # now we don't have to perform the big formula bellow on all rows of the database but only on
+    # the rows that are within the range of min and max lon and lat
+
+    r = distance/6371
+
+    latmin = lat - r 
+    latmax = lat + r
+
+    # here it gets a little more complicated, but calculating longitudes min and max the same way we did latitude
+    # is incorrect because distance gets shorter the further north or south you go from the equator
+    # so the next formula was taken from a math book to get the correct min/max long distance
+
+    latT = Math.asin(Math.sin(lat)/Math.cos(r))
+
+    # @longT = Math.acos( ( Math.cos(r) - Math.sin(latT) * Math.sin(lat) ) / ( Math.cos(latT) * Math.cos(lat) ) )
+    # formula above is long form of formula bellow
+
+    lonT = Math.asin(Math.sin(r)/Math.cos(lat))
+
+    lonmin = lon - lonT
+    lonmax = lon + lonT
+
+    ## First attempt at creating query, but this query doesn't use index of the table so if we had a large dataset, searches would be slow
+    #
+    # sql = "select * from (
+    # SELECT  *,( 3959 * acos( cos( radians(#{lat}) ) * cos( radians( lat ) ) * cos( radians( lon ) - radians(#{lon}) ) + sin( radians(#{lat}) # ) * sin( radians( lat ) ) ) ) AS distance 
+    # FROM offices
+    # ) al
+    # where distance < #{params['distance']}
+    # ORDER BY distance;"
+
+    # This query uses indexes of the table and speeds up searches
+    sql = "select * from (
+    SELECT *,( lat >= #{latmin} AND lat <= #{latmax}) AND (lon >= #{lonmin} AND lon <= #{lonmax}),
+    ( 3959 * acos( cos( radians(#{lat}) ) * cos( radians( lat ) ) * cos( radians( lon ) - radians(#{lon}) ) + sin( radians(#{lat}) ) * sin( radians( lat ) ) ) ) AS distance
+    FROM offices
+    ) al
+    where distance < #{distance/1.609344}
+    ORDER BY distance;"
+    
+    ActiveRecord::Base.connection.execute(sql)
+
+    # I tested this method with Postgis/rgeo method and they both return almost identical values
   end
 end

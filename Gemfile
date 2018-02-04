@@ -11,8 +11,6 @@ gem 'bootstrap-sass'
 gem 'activerecord-postgis-adapter'
 # rego is postgis dependancy
 gem "rgeo"
-# for points
-gem 'georuby'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 0.18'
 #Api requests
@@ -51,6 +49,9 @@ group :development, :test do
   gem 'byebug', platform: :mri
   gem 'rspec-rails'
   gem 'capybara'
+  gem 'guard-rspec', require: false
+  gem 'factory_bot_rails'
+  gem 'faker', :git => 'https://github.com/stympy/faker.git', :branch => 'master'
 end
 
 group :development do
