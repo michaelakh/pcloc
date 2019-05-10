@@ -10,7 +10,7 @@ Then on the index page, you can search via distance in miles for closest office 
 Clone directory into your desired location
 
 ```
-git clone https://github.com/michaelakh/igstories.git
+git clone https://github.com/michaelakh/pcloc.git
 ```
 Go into the app directory
 ```
